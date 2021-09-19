@@ -17,6 +17,8 @@ if (NOT INI_FOUND)
 	message(FATAL_ERROR "Missing dependency: libini")
 endif()
 
+message(STATUS "Ini lib: ${INI_LIBRARY_DIRS}")
+message(STATUS "Ini include: ${INI_INCLUDE_DIRS}")
 link_directories(${INI_LIBRARY_DIRS})
 include_directories(${INI_INCLUDE_DIRS})
 

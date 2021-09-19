@@ -1,0 +1,47 @@
+name: libopk
+
+on: [push]
+
+jobs:
+  build-win:
+    name: Build libopk (Windows)
+    strategy:
+      fail-fast: false
+      matrix:
+        vm: ['windows-2019', 'windows-2022']
+    runs-on: ${{ matrix.vm }}
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+    - uses: msys2/setup-msys2@v2
+      with:
+        update: false
+        msystem: mingw64
+        install: >-
+          base-devel
+          git
+          mingw-w64-x86_64-toolchain
+          mingw-w64-x86_64-cmake
+    - uses: actions/checkout@v2
+      with:
+        repository: 'pcercuei/libini'
+        path: 'libini'
+    - name: Configure, build and install libini
+      run: |
+        cmake -Bbuild -G "MSYS Makefiles"
+        cmake --build build --config Release --parallel
+        cmake --install build --prefix /usr
+      working-directory: libini
+    - uses: actions/upload-artifact@v2
+      with:
+        name: libini-win
+        path: |
+          libini/build
+    - uses: actions/checkout@v2
+    - name: Configure, build and install libopk
+      run: |
+        cmake -Bbuild -G "MSYS Makefiles"
+        cmake --build build --config Release --target opk --verbose
+        cmake --install build
+
